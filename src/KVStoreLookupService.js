@@ -31,7 +31,7 @@ class KVStoreLookupService {
    * @param {Buffer} obj.outputScript the outputScript data for the given UTXO
    * @returns {string} indicating the success status
    */
-  async outputAdded ({ txid, vout, outputScript, topic }) {
+  async outputAdded({ txid, vout, outputScript, topic }) {
     if (!this.topics.includes(topic)) return
     // Decode the KVStore fields from the Bitcoin outputScript
     const result = pushdrop.decode({
@@ -58,7 +58,7 @@ class KVStoreLookupService {
    * @param {string} obj.topic the topic this UTXO is apart of
    * @returns
    */
-  async outputSpent ({ txid, vout, topic }) {
+  async outputSpent({ txid, vout, topic }) {
     if (!this.topics.includes(topic)) return
     await this.storageEngine.deleteRecord({ txid, vout })
   }
@@ -69,7 +69,7 @@ class KVStoreLookupService {
    * @param {object} obj.query lookup query given as an object
    * @returns {object} with the data given in an object
    */
-  async lookup ({ query }) {
+  async lookup({ query }) {
     // Validate Query
     if (!query) {
       const e = new Error('Lookup must include a valid query!')
@@ -77,14 +77,52 @@ class KVStoreLookupService {
       throw e
     }
     if (query.protectedKey) {
-      return await this.storageEngine.findByProtectedKey({
+      const results = await this.storageEngine.findByProtectedKey({
         protectedKey: query.protectedKey
       })
+      results.history = async (output, currentDepth) => { 
+        return await this.historySelector(output, currentDepth)
+      }
+      return results
     } else {
       const e = new Error('Query parameters must include a valid Identity Key, Title, Artist Name, Song ID, or Display all!')
       e.code = 'ERR_INSUFFICIENT_QUERY_PARAMS'
       throw e
     }
+  }
+  async historySelector(output, currentDepth) {
+    try {
+
+      /**
+       * TODO: Add any custom validation code for determining if an output should be included in the history
+       * 
+       * Example for a Machine Part Tracker Application:
+       * if (isMetalPart(result.fields[1].toString())) { // includes history of all metal parts that went into making a machine represented by a UTXO }
+       */
+      
+      const result = pushdrop.decode({
+        script: output.outputScript.toString('hex'),
+        fieldFormat: 'buffer'
+      })
+
+      if (result.fields.length !== 2) {
+        const e = new Error(`KVStore tokens have two PushDrop fields, but this token has ${result.fields.length} fields!`)
+        e.code = 'ERR_WRONG_NUMBER_OF_FIELDS'
+        throw e
+      }
+
+      if (result.fields[0].byteLength !== 32) {
+        const e = new Error(`KVStore tokens have 32-byte protected keys in their first PushDrop field, but the key for this token has ${result.fields[0].byteLength} bytes!`)
+        e.code = 'ERR_INVALID_KEY_LENGTH'
+        throw e
+      }
+      
+      return true
+    } catch (error) {
+      // Probably not a PushDrop token so do nothing
+      console.log(error)
+    }
+    return false
   }
 }
 KVStoreLookupService.KnexStorageEngine = KnexStorageEngine
