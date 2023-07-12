@@ -81,7 +81,7 @@ class KVStoreLookupService {
         protectedKey: query.protectedKey
       })
       results.history = async (output, currentDepth) => { 
-        return await this.historySelector(output, currentDepth)
+        return await this.historySelector(output, currentDepth, query.history)
       }
       return results
     } else {
@@ -90,16 +90,16 @@ class KVStoreLookupService {
       throw e
     }
   }
-  async historySelector(output, currentDepth) {
+  async historySelector(output, currentDepth, historyRequested) {
     try {
-
+      if (historyRequested === false) return false
       /**
        * TODO: Add any custom validation code for determining if an output should be included in the history
        * 
        * Example for a Machine Part Tracker Application:
        * if (isMetalPart(result.fields[1].toString())) { // includes history of all metal parts that went into making a machine represented by a UTXO }
        */
-      
+
       const result = pushdrop.decode({
         script: output.outputScript.toString('hex'),
         fieldFormat: 'buffer'
