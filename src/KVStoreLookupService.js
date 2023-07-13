@@ -94,7 +94,7 @@ class KVStoreLookupService {
   }
   async historySelector(output, currentDepth, historyRequested) {
     try {
-      if (historyRequested === false) return false
+      if (historyRequested === false && currentDepth > 0) return false
       /**
        * TODO: Add any custom validation code for determining if an output should be included in the history
        * 
