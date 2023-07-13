@@ -83,6 +83,8 @@ class KVStoreLookupService {
       results.history = async (output, currentDepth) => { 
         return await this.historySelector(output, currentDepth, query.history)
       }
+      // Example depth query:
+      // results.history = query.depth
       return results
     } else {
       const e = new Error('Query parameters must include a valid Identity Key, Title, Artist Name, Song ID, or Display all!')
@@ -116,8 +118,11 @@ class KVStoreLookupService {
         e.code = 'ERR_INVALID_KEY_LENGTH'
         throw e
       }
-      
-      return true
+
+      // Example: only allow data that doesn't start with a number to be selected.
+      if (!/^\d/.test(result.fields[1].toString())) {
+        return true
+      }
     } catch (error) {
       // Probably not a PushDrop token so do nothing
       console.log(error)
