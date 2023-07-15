@@ -119,10 +119,10 @@ class KVStoreLookupService {
         throw e
       }
 
-      // Example: only allow data that doesn't start with a number to be selected.
-      if (!/^\d/.test(result.fields[1].toString())) {
-        return true
-      }
+      // Filter Example: only allow data that doesn't start with a number to be selected.
+      // if (!/^\d/.test(result.fields[1].toString())) {
+      //   return true
+      // }
     } catch (error) {
       // Probably not a PushDrop token so do nothing
       console.log(error)
