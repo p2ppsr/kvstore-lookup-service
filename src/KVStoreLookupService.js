@@ -39,10 +39,10 @@ class KVStoreLookupService {
       fieldFormat: 'buffer'
     })
 
-    // TSP song data to store
+    // KVSTore data to store
     const protectedKey = result.fields[0].toString('base64')
 
-    // Store TSP fields in the StorageEngine
+    // Store KVStore fields in the StorageEngine
     await this.storageEngine.storeRecord({
       txid,
       vout,
@@ -87,7 +87,7 @@ class KVStoreLookupService {
       // results.history = query.depth
       return results
     } else {
-      const e = new Error('Query parameters must include a valid Identity Key, Title, Artist Name, Song ID, or Display all!')
+      const e = new Error('Query parameters must include a valid protectedKey!')
       e.code = 'ERR_INSUFFICIENT_QUERY_PARAMS'
       throw e
     }
