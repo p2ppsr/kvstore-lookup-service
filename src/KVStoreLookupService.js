@@ -127,7 +127,7 @@ class KVStoreLookupService {
       // Probably not a PushDrop token so do nothing
       console.log(error)
     }
-    return false
+    return true
   }
 }
 KVStoreLookupService.KnexStorageEngine = KnexStorageEngine
