@@ -1,6 +1,6 @@
 {
   "name": "kvstore-lookup-service",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Provides lookup service for KVStore tokens",
   "main": "src/KVStoreLookupService.js",
   "scripts": {
