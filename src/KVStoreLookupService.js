@@ -80,8 +80,10 @@ class KVStoreLookupService {
       const results = await this.storageEngine.findByProtectedKey({
         protectedKey: query.protectedKey
       })
-      results.history = async (output, currentDepth) => { 
-        return await this.historySelector(output, currentDepth, query.history)
+      for (const i in results) {
+        results[i].history = async (output, currentDepth) => { 
+          return await this.historySelector(output, currentDepth, query.history)
+        }
       }
       // Example depth query:
       // results.history = query.depth
